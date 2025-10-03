@@ -1,3 +1,4 @@
+// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,7 +10,15 @@ const PORT = process.env.PORT || 5000;
 // Import des routes
 const matchRoutes = require('./src/routes/matchRoutes');
 
-app.use(cors());
+// Configuration CORS améliorée
+// On autorise explicitement votre frontend en local à communiquer avec le backend.
+// Vous pourrez ajouter l'URL de votre frontend sur Render ici plus tard.
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Routes
