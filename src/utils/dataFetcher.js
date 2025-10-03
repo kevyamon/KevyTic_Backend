@@ -1,18 +1,18 @@
+// backend/src/utils/dataFetcher.js
 const fetchData = async (matchData) => {
-  // Dans une application réelle, cette fonction ferait le travail suivant :
-  // 1. Utiliser les données `matchData` (comme les noms d'équipes et la date)
-  //    pour trouver le match sur des sites comme Flashscore, Betclic, etc.
-  // 2. Utiliser des outils de web scraping (comme Puppeteer ou Cheerio)
-  //    pour extraire les informations clés :
+  // Dans une future mission, cette fonction utilisera l'API Gemini pour :
+  // 1. Utiliser les données `matchData` (les noms d'équipes extraits de l'image)
+  //    pour trouver le match sur des sites de statistiques et de cotes.
+  // 2. Extraire les informations clés :
   //    - Cotes des bookmakers (1X2, Over/Under, etc.)
   //    - Statistiques des équipes (forme récente, buts marqués/encaissés)
   //    - Informations sur l'équipe (blessures, suspensions)
   //    - Historique des confrontations directes
-  // 3. Traiter ces données et les retourner.
+  // 3. Traiter ces données et les retourner dans un format structuré.
 
-  console.log(`Simulating data fetch for match: ${matchData.team1} vs ${matchData.team2}`);
+  console.log(`Simulation de la récupération de données pour le match : ${matchData.team1} vs ${matchData.team2}`);
 
-  // Données factices pour la simulation
+  // Données factices pour la simulation, maintenant dynamiques avec les noms d'équipes
   const mockData = {
     teams: {
       home: matchData.team1,
@@ -35,7 +35,7 @@ const fetchData = async (matchData) => {
       draws: 1,
     },
     injuries: {
-      homeTeam: ['Key Player A'],
+      homeTeam: ['Joueur Clé A'],
       awayTeam: [],
     },
   };
