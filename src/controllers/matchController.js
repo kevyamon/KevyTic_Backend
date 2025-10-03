@@ -1,26 +1,25 @@
-// backend/src/controllers/matchController.js
+// backend/src/controllers/matchController.js (VERSION DE TEST)
 const { fetchData } = require('../utils/dataFetcher');
 const { makePrediction } = require('../utils/predictionLogic');
 const Prediction = require('../models/Prediction');
-const { analyzeMatchImage } = require('../services/geminiService');
+// On n'importe plus le service Gemini pour ce test
+// const { analyzeMatchImage } = require('../services/geminiService');
 
 const analyzeMatch = async (req, res) => {
   try {
-    // Étape 1 : Vérification de la présence de l'image
+    // Étape 1 : Vérification de la présence de l'image (on la garde pour que la requête ne change pas)
     if (!req.file) {
       return res.status(400).json({ error: 'Aucune image n\'a été téléchargée.' });
     }
 
-    // Étape 2 : Analyse de l'image par le service Gemini
-    const imageBuffer = req.file.buffer;
-    const mimeType = req.file.mimetype;
-    const matchData = await analyzeMatchImage(imageBuffer, mimeType);
+    // Étape 2 : ON NE FAIT PAS APPEL À GEMINI. On utilise des données factices.
+    console.log('--- MODE DE TEST ACTIF ---');
+    const matchData = {
+      team1: "Équipe Test 1",
+      team2: "Équipe Test 2"
+    };
 
-    if (!matchData || !matchData.team1 || !matchData.team2) {
-      return res.status(400).json({ error: 'L\'IA n\'a pas pu extraire les noms des équipes de l\'image.' });
-    }
-
-    // Étape 3 : Récupération des données du match (toujours simulée pour l'instant)
+    // Étape 3 : Récupération des données du match (simulée)
     const fetchedData = await fetchData(matchData);
 
     // Étape 4 : Application de la logique de prédiction
@@ -32,7 +31,7 @@ const analyzeMatch = async (req, res) => {
       awayTeam: matchData.team2,
       predictedOutcome: predictionResult.outcome,
       suretyPercentage: predictionResult.surety,
-      analysisDetails: fetchedData, // On sauvegarde les données utilisées pour l'analyse
+      analysisDetails: fetchedData,
     });
     await newPrediction.save();
 
@@ -43,11 +42,7 @@ const analyzeMatch = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Erreur lors de l\'analyse du match :', error);
-    // Fournir une erreur plus spécifique si elle vient de Gemini
-    if (error.message.includes('IA')) {
-      return res.status(500).json({ error: error.message });
-    }
+    console.error('Erreur lors de l\'analyse du match (en mode test) :', error);
     res.status(500).json({ error: 'Erreur serveur interne.' });
   }
 };
