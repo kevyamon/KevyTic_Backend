@@ -1,23 +1,24 @@
-// backend/src/controllers/matchController.js (VERSION DE TEST)
+// backend/src/controllers/matchController.js
 const { fetchData } = require('../utils/dataFetcher');
 const { makePrediction } = require('../utils/predictionLogic');
 const Prediction = require('../models/Prediction');
-// On n'importe plus le service Gemini pour ce test
-// const { analyzeMatchImage } = require('../services/geminiService');
+// On remplace l'ancien service par le nouveau
+const { analyzeMatchImage } = require('../services/ocrService');
 
 const analyzeMatch = async (req, res) => {
   try {
-    // Étape 1 : Vérification de la présence de l'image (on la garde pour que la requête ne change pas)
+    // Étape 1 : Vérification de la présence de l'image
     if (!req.file) {
       return res.status(400).json({ error: 'Aucune image n\'a été téléchargée.' });
     }
 
-    // Étape 2 : ON NE FAIT PAS APPEL À GEMINI. On utilise des données factices.
-    console.log('--- MODE DE TEST ACTIF ---');
-    const matchData = {
-      team1: "Équipe Test 1",
-      team2: "Équipe Test 2"
-    };
+    // Étape 2 : Analyse de l'image par le service OCR Tesseract
+    const imageBuffer = req.file.buffer;
+    const matchData = await analyzeMatchImage(imageBuffer);
+
+    if (!matchData || !matchData.team1 || !matchData.team2) {
+      return res.status(400).json({ error: 'L\'OCR n\'a pas pu extraire les noms des équipes de l\'image.' });
+    }
 
     // Étape 3 : Récupération des données du match (simulée)
     const fetchedData = await fetchData(matchData);
@@ -42,7 +43,10 @@ const analyzeMatch = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Erreur lors de l\'analyse du match (en mode test) :', error);
+    console.error('Erreur lors de l\'analyse du match :', error);
+    if (error.message.includes('OCR') || error.message.includes('équipes')) {
+      return res.status(500).json({ error: error.message });
+    }
     res.status(500).json({ error: 'Erreur serveur interne.' });
   }
 };
